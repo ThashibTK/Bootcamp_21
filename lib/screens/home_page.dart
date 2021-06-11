@@ -1,8 +1,12 @@
 import 'package:bootcamp_sample/model/photos_model.dart';
+import 'package:bootcamp_sample/screens/profile_page.dart';
+import 'package:bootcamp_sample/widgets/photo_grid.dart';
 import 'package:bootcamp_sample/widgets/top_var.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:bootcamp_sample/env/keys.dart' as config;
+
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive/hive.dart';
 
 class HomepageScreen extends StatefulWidget {
   @override
@@ -10,31 +14,10 @@ class HomepageScreen extends StatefulWidget {
 }
 
 class _HomepageScreenState extends State<HomepageScreen> {
-  List<PhotosModel> _photosData = [];
-
-  Future<void> _fetchPhotos() async {
-    final _dioInstance = Dio();
-
-    _dioInstance.options.headers['Authorization'] =
-        "Client-ID ${config.unsplashKey}";
-
-    final _fetchData =
-        await _dioInstance.get('https://api.unsplash.com/photos');
-
-    for (var _items in _fetchData.data) {
-      setState(() {
-        _photosData.add(
-            PhotosModel(id: _items['id'], imgURL: _items['urls']['regular']));
-      });
-    }
-
-    print("object");
-  }
-
-  @override
-  void initState() {
-    _fetchPhotos();
-    super.initState();
+  void _profileEdit() {
+    Navigator.of(context)
+        .pushNamed(ProfileScreen.routeName, arguments: "nee vaa")
+        .then((value) => print("Object $value"));
   }
 
   @override
@@ -45,36 +28,30 @@ class _HomepageScreenState extends State<HomepageScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TopBar(
-                title: 'Thashib Tk',
-                subtitle: 'Developer(Noob)',
-                color: Colors.blue.shade400,
-              ),
+              profileTab(),
               const SizedBox(height: 10),
-              Text(
-                '  Photograpghy',
-                style: TextStyle(fontSize: 22, color: Color(0xff0B3D2E)),
-              ),
+              Text('  Photograpghy',
+                  style: TextStyle(fontSize: 22, color: Color(0xff0B3D2E))),
               const SizedBox(height: 10),
-              GridView.builder(
-                padding: EdgeInsets.all(10),
-                itemCount: _photosData.length,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    crossAxisCount: 2),
-                itemBuilder: (ctx, index) => Container(
-                  child: Image.network(
-                    _photosData[index].imgURL,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              )
+              PhotoGrid()
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _profileEdit,
+        child: Icon(Icons.edit),
+      ),
+    );
+  }
+
+  ValueListenableBuilder<Box<dynamic>> profileTab() {
+    return ValueListenableBuilder(
+      valueListenable: Hive.box('profile').listenable(),
+      builder: (BuildContext context, Box value, Widget? child) => TopBar(
+        title: value.get('name'),
+        subtitle: 'Developer(Noob)',
+        color: Colors.blue.shade400,
       ),
     );
   }
