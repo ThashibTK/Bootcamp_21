@@ -1,8 +1,6 @@
-import 'package:bootcamp_sample/model/photos_model.dart';
 import 'package:bootcamp_sample/screens/profile_page.dart';
 import 'package:bootcamp_sample/widgets/photo_grid.dart';
 import 'package:bootcamp_sample/widgets/top_var.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import 'package:hive_flutter/hive_flutter.dart';
@@ -16,7 +14,7 @@ class HomepageScreen extends StatefulWidget {
 class _HomepageScreenState extends State<HomepageScreen> {
   void _profileEdit() {
     Navigator.of(context)
-        .pushNamed(ProfileScreen.routeName, arguments: "nee vaa")
+        .pushNamed(ProfileScreen.routeName, arguments: "something")
         .then((value) => print("Object $value"));
   }
 
